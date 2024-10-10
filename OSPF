@@ -1,0 +1,115 @@
+# -*- coding: utf-8 -*-
+import os
+import re
+import telnetlib
+import time
+import pandas as pd
+
+
+def get_info_telnet(host_ip, username, password):
+    tn = telnetlib.Telnet()
+    try:
+        tn.open(host_ip, port=23, timeout=5)
+        print('%s connected ssuccess !' % host_ip)
+
+        tn.read_until(b'Username:', timeout=5)
+        tn.write(username.encode('ascii') + b'\n')
+
+        tn.read_until(b'Password:', timeout=5)
+        tn.write(password.encode('ascii') + b'\n')
+        time.sleep(1)
+
+        command_result = tn.read_until(b'#', timeout=5)
+        if b'#' not in command_result:
+            print('%s登录失败' % host_ip)
+        else:
+            print('%s登录成功' % host_ip)
+    except:
+        print('%s网络连接失败' % host_ip)
+
+    command = "show ip ospf neighbor detail"
+    command = bytes(command, encoding='utf-8')
+    tn.write(command + b'\n')
+    time.sleep(1)
+
+    result_list = []
+    while (True):
+        command_result = tn.read_very_eager().decode('ascii')
+        # print(command_result)
+        result_list.append(command_result)
+        if re.findall(r"--More--", command_result.strip()):
+            tn.write(b" ")
+
+        elif re.findall(r"#", command_result.strip()):
+            break
+        else:
+            time.sleep(0.05)
+            continue
+
+    result_str = "\n".join(result_list)
+
+    if "There is no valid OSPF instance" in result_str:
+        print("没有查到OSPF实例！")
+        return
+
+    dict_ouput = {}
+    startpattern = re.compile(r'Process ID (\d+)')
+    strtext = re.search(startpattern, str(result_str)).group(1)
+    dict_ouput["Process ID"] = strtext
+
+    startpattern = re.compile(r'Neighbor\s+(\d+.\d+.\d+.\d+)')
+    strtext = re.search(startpattern, str(result_str)).group(1)
+    dict_ouput["Neighbor"] = strtext
+
+    startpattern = re.compile(r'(Via interface .*)')
+    strtext = re.search(startpattern, str(result_str)).group(1)
+    dict_ouput["Via interface"] = strtext
+
+    startpattern = re.compile(r'In the area\s+(.+)')
+    strtext = re.search(startpattern, str(result_str)).group(1)
+    dict_ouput["area"] = strtext
+
+    startpattern = re.compile(r'State\s+(\w+)')
+    strtext = re.search(startpattern, str(result_str)).group(1)
+    dict_ouput["State"] = strtext
+
+    pd_output = pd.DataFrame.from_dict([dict_ouput])
+
+    root_path = os.path.abspath(os.path.dirname(__file__))
+    os.makedirs(os.path.join(root_path, "result"), exist_ok=True)
+    result_path = os.path.join(root_path, "result", f"OSPF状态信息_{time.strftime('%Y%m%d%H%M%S', time.localtime())}.csv")
+    pd_output.to_csv(result_path, index=None, encoding='gb18030')
+    print(f"OSPF状态存放位置:{result_path}")
+
+    command = "show running-config ospfv2"
+    command = bytes(command, encoding='utf-8')
+    tn.write(command + b'\n')
+    time.sleep(1)
+
+    result_list = []
+    while (True):
+        command_result = tn.read_very_eager().decode('ascii')
+        result_list.append(command_result)
+        if re.findall(r"--More--", command_result.strip()):
+            tn.write(b" ")
+        elif re.findall(r"#", command_result.strip()):
+            break
+        else:
+            time.sleep(0.05)
+            continue
+
+    result_str = "\n".join(result_list)
+    root_path = os.path.abspath(os.path.dirname(__file__))
+    os.makedirs(os.path.join(root_path, "result"), exist_ok=True)
+    result_path = os.path.join(root_path, "result", f"OSPF配置信息_{time.strftime('%Y%m%d%H%M%S', time.localtime())}.txt")
+    with open(result_path, "w") as ac:
+        ac.write(result_str)
+    print(f"OSPF配置存放位置:{result_path}")
+    tn.close()
+
+
+if __name__ == '__main__':
+    host_ip = '192.168.0.2'
+    username = 'test'
+    password = 'Test@123'
+    get_info_telnet(host_ip, username, password)
