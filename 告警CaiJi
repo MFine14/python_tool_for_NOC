@@ -1,0 +1,89 @@
+# -*- coding: utf-8 -*-
+import os
+import re
+import telnetlib
+import time
+import pandas as pd
+
+
+def handle_alarm_info(alarm_info):
+    if not alarm_info:
+        print("未查询到告警信息")
+        return
+    alarm_data = re.findall("(An alarm.*?)(?=An alarm|A protected event|An event|#)", alarm_info, re.S | re.M)
+    alarm_list = []
+    for each_alarm in alarm_data:
+        ids = re.findall("An alarm (\d+)", each_alarm)
+        alarm_id = ids[0] if ids else ""
+        if alarm_id:
+            occ_times = re.findall("occurred at (\d{2}:\d{2}:\d{2} \d{2}-\d{2}-\d{4})", each_alarm)
+            occurred_time = occ_times[0] if occ_times else ""
+
+            ala_types = re.findall("(%.*%)", each_alarm)
+            alarm_type = ala_types[0] if ala_types else ""
+
+            infos = re.findall("%.*%\s*(.*)", each_alarm, re.M|re.S)
+            alarm_info = " ".join(infos[0].split()[2:]) if infos else ""
+            alarm_list.append([alarm_id, occurred_time, alarm_type, alarm_info])
+
+    if alarm_list:
+        root_path = os.path.abspath(os.path.dirname(__file__))
+        os.makedirs(os.path.join(root_path, "result"), exist_ok=True)
+        alarm_path = os.path.join(root_path, "result", f"全量告警信息_{time.strftime('%Y%m%d%H%M%S', time.localtime())}.csv")
+        columns = ['ORID', 'occurred time', 'alarm type', 'alarm info']
+        df = pd.DataFrame(alarm_list, columns=columns)
+        df.to_csv(alarm_path, index=False, encoding='gb18030')
+        print(f"全量告警信息存放位置:{alarm_path}")
+    else:
+        print("当前没有告警信息！")
+
+def get_all_info(tn, command):
+    command = bytes(command, encoding='utf-8')
+    tn.write(command + b'\n')
+    time.sleep(1)
+    result_list = []
+    while (True):
+        command_result = tn.read_very_eager().decode('ascii')
+        result_list.append(command_result)
+        if re.findall(r"--More--", command_result.strip()):
+            tn.write(b" ")
+        elif re.findall(r"#", command_result.strip()):
+            break
+        else:
+            time.sleep(0.05)
+            continue
+    result_str = "\n".join(result_list)
+    return result_str
+
+def get_info_telnet(host_ip, username, password):
+    tn = telnetlib.Telnet()
+    try:
+        tn.open(host_ip, port=23, timeout=5)
+        print('%s connected ssuccess !' % host_ip)
+
+        tn.read_until(b'Username:', timeout=5)
+        tn.write(username.encode('ascii') + b'\n')
+
+        tn.read_until(b'Password:', timeout=5)
+        tn.write(password.encode('ascii') + b'\n')
+        time.sleep(1)
+
+        command_result = tn.read_until(b'#', timeout=5)
+        if b'#' not in command_result:
+            print('%s登录失败' % host_ip)
+        else:
+            print('%s登录成功' % host_ip)
+    except:
+        print('%s网络连接失败' % host_ip)
+
+    command = "show alarm current"
+    alarm_info = get_all_info(tn, command)
+    handle_alarm_info(alarm_info)
+    tn.close()
+
+
+if __name__ == '__main__':
+    host_ip = '192.168.0.2'
+    username = 'test'
+    password = 'Test@123'
+    get_info_telnet(host_ip, username, password)
