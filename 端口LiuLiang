@@ -1,0 +1,155 @@
+# -*- coding: utf-8 -*-
+import os
+import pandas as pd
+import re
+import schedule
+import telnetlib
+import time
+
+
+def get_info_telnet(host_ip, username, password):
+    tn = telnetlib.Telnet()
+    try:
+
+        tn.open(host_ip, port=23, timeout=5)
+        print('%s connected ssuccess !' % host_ip)
+
+        tn.read_until(b'Username:', timeout=5)
+        tn.write(username.encode('ascii') + b'\n')
+
+        tn.read_until(b'Password:', timeout=5)
+        tn.write(password.encode('ascii') + b'\n')
+        time.sleep(1)
+
+        command_result = tn.read_until(b'#', timeout=5)
+        if b'#' not in command_result:
+            print('%s登录失败' % host_ip)
+        else:
+            print('%s登录成功' % host_ip)
+
+    except:
+
+        print('%s网络连接失败' % host_ip)
+
+    command = "show clock"
+    command = bytes(command, encoding='utf-8')
+    tn.write(command + b'\r\n')
+    run_time = tn.read_until(b'#')
+    run_time = re.findall(r"\d+:\d+:\d+\s+\w+\s+\w+\s+\w+\s+\d+\s+2024", run_time.decode('GB18030'))[0]
+
+    command = "show ip interface brief"
+    command = bytes(command, encoding='utf-8')
+    tn.write(command + b'\n')
+    time.sleep(1)
+
+    result_list = []
+    while (True):
+        command_result = tn.read_very_eager().decode('ascii')
+        # print(command_result)
+        result_list.append(command_result)
+        if re.findall(r"--More--", command_result.strip()):
+            tn.write(b" ")
+
+        elif re.findall(r"#", command_result.strip()):
+            break
+        else:
+            time.sleep(0.05)
+            continue
+
+    result_str = "\n".join(result_list)
+    list_str = result_str.split('\n')
+
+    pd_result_2 = pd.DataFrame()
+    list_temperature_vec = []
+    for j in list_str:
+        regex = re.compile(r'\w+gei.+\s+.+\s+.+\s+.+\s+.+\s+.+\s+.+', re.S)
+        if len(re.findall(r"Interface", j)) > 0:
+            new_columns = list_find_str = re.split(r'\s+', j)
+            new_columns = new_columns[0:7]
+
+        if len(regex.findall(j)) > 0:
+            list_find_str = regex.findall(j)[0]
+            list_find_str = re.split(r'\s+', list_find_str)
+            list_temperature_vec.append(list_find_str)
+    pd_result_2 = pd.DataFrame(list_temperature_vec)
+    pd_result_2.columns = new_columns
+    pd_result_2 = pd_result_2[pd_result_2['Phy'] == 'up']
+
+    # 端口流量及状态检查
+    pd_output = pd.DataFrame()
+    for check_port in pd_result_2['Interface']:
+        pd_each_port = pd.DataFrame()
+        dict_ouput = {}
+
+        dict_ouput["port_name"] = check_port
+        dict_ouput["time"] = run_time
+
+        command = " show interface " + check_port
+        command = bytes(command, encoding='utf-8')
+        tn.write(command + b'\n')
+        time.sleep(1)
+
+        result_list = []
+        while (True):
+            command_result = tn.read_very_eager().decode('ascii')
+            # print(command_result)
+            result_list.append(command_result)
+            if re.findall(r"--More--", command_result.strip()):
+                tn.write(b" ")
+
+            elif re.findall(r"#", command_result.strip()):
+                break
+            else:
+                time.sleep(0.05)
+                continue
+        result_str = "\n".join(result_list)
+
+        startpattern = re.compile(r'In_Bytes\s+(\d+)\s+')
+        strtext = re.search(startpattern, str(result_str)).group(1)
+        strtext = int(strtext)
+        dict_ouput["rx_bytes"] = strtext
+
+        startpattern = re.compile(r'E_Bytes\s+(\d+)\s+')
+        strtext = re.search(startpattern, str(result_str)).group(1)
+        strtext = int(strtext)
+        dict_ouput["tx_bytes"] = strtext
+        pd_output = pd.concat([pd_output, pd.DataFrame.from_dict([dict_ouput])], axis=0)
+
+    pd_output['time'] = pd.to_datetime(pd_output['time'], dayfirst=True)
+    pd_output['time'] = pd_output['time'].apply(lambda x: x.strftime('%Y/%m/%d %H:%M:%S'))
+    pd_output["id"] = pd_output["port_name"] + '_' + pd_output["time"]
+    # 添加扫描时间列
+    current_scan_time = pd.Timestamp.now()
+    pd_output['scan_time'] = current_scan_time
+
+    root_path = os.path.abspath(os.path.dirname(__file__))
+    os.makedirs(os.path.join(root_path, "result"), exist_ok=True)
+    flow_path = os.path.join(root_path, "result", f"监控_端口流量.csv")
+    # 判断文件是否存在
+    if os.path.exists(flow_path):
+        existing_df = pd.read_csv(flow_path, encoding='gb18030')
+        existing_df['scan_time'] = pd.to_datetime(existing_df['scan_time'])
+        # 计算半小时前的时间
+        cutoff_time = current_scan_time - pd.Timedelta(minutes=30)
+        # 剔除扫描时间在半小时之前的旧数据
+        filtered_existing_df = existing_df[existing_df['scan_time'] >= cutoff_time]
+        combined_df = pd.concat([filtered_existing_df, pd_output], ignore_index=True)
+        combined_df.to_csv(flow_path, index=False, encoding='gb18030')
+    else:
+        pd_output.to_csv(flow_path, index=False, encoding='gb18030')
+    print(f"监控_端口流量存放位置:{flow_path}")
+    tn.close()
+
+
+def monitor_task():
+    host_ip = '192.168.0.2'
+    username = 'test'
+    password = 'Test@123'
+    get_info_telnet(host_ip, username, password)
+
+
+if __name__ == '__main__':
+    schedule.every(30).seconds.do(monitor_task)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
