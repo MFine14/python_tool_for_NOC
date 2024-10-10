@@ -1,0 +1,106 @@
+# -*- coding: utf-8 -*-
+import os
+import pandas as pd
+import re
+import schedule
+import telnetlib
+import time
+
+def get_all_info(tn, command):
+    command = bytes(command, encoding='utf-8')
+    tn.write(command + b'\n')
+    time.sleep(1)
+    result_list = []
+    while (True):
+        command_result = tn.read_very_eager().decode('ascii')
+        result_list.append(command_result)
+        if re.findall(r"--More--", command_result.strip()):
+            tn.write(b" ")
+        elif re.findall(r"#", command_result.strip()):
+            break
+        else:
+            time.sleep(0.05)
+            continue
+    result_str = "\n".join(result_list)
+    return result_str
+
+
+def handle_alarm_info(alarm_info):
+    if not alarm_info:
+        return
+    alarm_data = re.findall("(An alarm.*?)(?=An alarm|A protected event|An event|#)", alarm_info, re.S | re.M)
+    alarm_list = []
+    for each_alarm in alarm_data:
+        ids = re.findall("An alarm (\d+)", each_alarm)
+        alarm_id = ids[0] if ids else ""
+        if alarm_id:
+            occ_times = re.findall("occurred at (\d{2}:\d{2}:\d{2} \d{2}-\d{2}-\d{4})", each_alarm)
+            occurred_time = occ_times[0] if occ_times else ""
+
+            ala_types = re.findall("(%.*%)", each_alarm)
+            alarm_type = ala_types[0] if ala_types else ""
+
+            infos = re.findall("%.*%\s*(.*)", each_alarm, re.M|re.S)
+            alarm_info = " ".join(infos[0].split()[2:]) if infos else ""
+            alarm_list.append([alarm_id, occurred_time, alarm_type, alarm_info])
+
+    if alarm_list:
+        root_path = os.path.abspath(os.path.dirname(__file__))
+        os.makedirs(os.path.join(root_path, "result"), exist_ok=True)
+        alarm_path = os.path.join(root_path, "result", f"监控_告警信息.csv")
+        columns = ['ORID', 'occurred time', 'alarm type', 'alarm info']
+        new_df = pd.DataFrame(alarm_list, columns=columns)
+        new_df['ORID'] = new_df['ORID'].astype(str)  # 将id列转为字符串类型
+        if os.path.exists(alarm_path):
+            existing_df = pd.read_csv(alarm_path, encoding='gb18030')
+            existing_df['ORID'] = existing_df['ORID'].astype(str)  # 将id列转为字符串类型
+            merged_df = pd.merge(new_df, existing_df, how='outer', indicator=True)
+            new_alarms = merged_df[merged_df['_merge'] == 'left_only'].drop(columns=['_merge'])
+            if not new_alarms.empty:
+                new_alarms.to_csv(alarm_path, mode='a', header=False, index=False, encoding='gb18030')
+                print(f"有新增告警!")
+                print(f"监控_告警信息存放位置: {alarm_path}")
+        else:
+            new_df.to_csv(alarm_path, index=False, encoding='gb18030')
+            print(f"监控_告警信息存放位置: {alarm_path}")
+
+
+def get_info_telnet(host_ip, username, password):
+    tn = telnetlib.Telnet()
+    try:
+        tn.open(host_ip, port=23, timeout=5)
+        print('%s connected ssuccess !' % host_ip)
+
+        tn.read_until(b'Username:', timeout=5)
+        tn.write(username.encode('ascii') + b'\n')
+
+        tn.read_until(b'Password:', timeout=5)
+        tn.write(password.encode('ascii') + b'\n')
+        time.sleep(1)
+
+        command_result = tn.read_until(b'#', timeout=5)
+        if b'#' not in command_result:
+            print('%s登录失败' % host_ip)
+        else:
+            print('%s登录成功' % host_ip)
+    except:
+        print('%s网络连接失败' % host_ip)
+
+    command = "show alarm current"
+    alarm_info = get_all_info(tn, command)
+    handle_alarm_info(alarm_info)
+    tn.close()
+
+
+def monitor_task():
+    host_ip = '192.168.0.2'
+    username = 'test'
+    password = 'Test@123'
+    get_info_telnet(host_ip, username, password)
+
+
+if __name__ == '__main__':
+    schedule.every(30).seconds.do(monitor_task)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
