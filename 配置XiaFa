@@ -1,0 +1,86 @@
+# -*- coding: utf-8 -*-
+import os
+import re
+import telnetlib
+import time
+import pandas as pd
+
+
+def get_all_info(tn, command):
+    command = bytes(command, encoding='utf-8')
+    tn.write(command + b'\n')
+    time.sleep(1)
+    result_list = []
+    while (True):
+        command_result = tn.read_very_eager().decode('ascii')
+        result_list.append(command_result)
+        if re.findall(r"--More--", command_result.strip()):
+            tn.write(b" ")
+        elif re.findall(r"#", command_result.strip()):
+            break
+        else:
+            time.sleep(0.05)
+            continue
+    result_str = "\n".join(result_list)
+    return result_str
+
+def handle_info(tn, info):
+    if not info:
+        print("show running-config-interfacefan 返回为空")
+        return
+    ips = re.findall("ip address (\d+\.\d+\.\d+\.\d+)", info)
+
+    if ips:
+        peer_ip = ips[0]
+        command = f"ping {peer_ip}"
+        ping_info = get_all_info(tn, command)
+        print(ping_info)
+        if "Success rate is 100 percent" in ping_info:
+            print(f"ping {peer_ip} 成功")
+    else:
+        print("对端地址未找到")
+
+
+def get_info_telnet(host_ip, username, password, config_info):
+    tn = telnetlib.Telnet()
+    try:
+        tn.open(host_ip, port=23, timeout=5)
+        print('%s connected ssuccess !' % host_ip)
+
+        tn.read_until(b'Username:', timeout=5)
+        tn.write(username.encode('ascii') + b'\n')
+
+        tn.read_until(b'Password:', timeout=5)
+        tn.write(password.encode('ascii') + b'\n')
+        time.sleep(1)
+
+        command_result = tn.read_until(b'#', timeout=5)
+        if b'#' not in command_result:
+            print('%s登录失败' % host_ip)
+        else:
+            print('%s登录成功' % host_ip)
+    except:
+        print('%s网络连接失败' % host_ip)
+
+    command = "config terminal"
+    cint_info = get_all_info(tn, command)
+    if "Enter configuration commands" not in cint_info:
+        print("进入配置模式失败")
+        return
+    # 写入配置
+    get_all_info(tn, config_info)
+    get_all_info(tn, "end")
+    write_info = get_all_info(tn, "write")
+    if "[OK]" in write_info:
+        print("配置保存成功")
+    else:
+        print("配置保存失败")
+    tn.close()
+
+
+if __name__ == '__main__':
+    host_ip = '192.168.0.2'
+    username = 'test'
+    password = 'Test@123'
+    config_info = 'interface xgei-0/1/1/42\nipv6 enable'   # 配置信息
+    get_info_telnet(host_ip, username, password, config_info)
