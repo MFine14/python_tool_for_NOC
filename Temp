@@ -1,0 +1,689 @@
+zte@129.60.161.170's password:
+     ┌────────────────────────────────────────────────────────────────────┐
+     │                        ? MobaXterm 12.1 ?                          │
+     │            (SSH client, X-server and networking tools)             │
+     │                                                                    │
+     │ ? SSH session to zte@129.60.161.170                                │
+     │   ? SSH compression : ?                                            │
+     │   ? SSH-browser     : ?                                            │
+     │   ? X11-forwarding  : ?  (disabled or not supported by server)     │
+     │   ? DISPLAY         : 172.16.29.48:0.0                             │
+     │                                                                    │
+     │ ? For more info, ctrl+click on help or visit our website           │
+     └────────────────────────────────────────────────────────────────────┘
+
+
+      *************************************************************************
+      Welcome to ZXR10 Carrier-Class High-end Routing Switch of ZTE Corporation
+      *************************************************************************
+
+Login at: 13:51:23 09-11-2024
+SW2-170#show runn
+SW2-170#show running-config
+!<mim>
+!configuration saved at 09:26:14 Wed Sep 11 2024 by write txt
+!last configuration change at 12:01:47 Wed Sep 11 2024 by zte
+!</mim>
+!<pm-sys-config>
+hostname SW2-170
+!</pm-sys-config>
+!<if-intf>
+interface xgei-0/1/0/1
+  no shutdown
+$
+interface xgei-0/1/0/2
+$
+interface xgei-0/1/0/3
+  switch attribute disable
+$
+interface xgei-0/1/0/4
+  no shutdown
+  switch attribute disable
+$
+interface xgei-0/1/0/5
+  no shutdown
+$
+interface xgei-0/1/0/6
+  no shutdown
+$
+interface xgei-0/1/0/7
+  no shutdown
+$
+interface xgei-0/1/0/8
+$
+interface xgei-0/1/0/9
+$
+interface xgei-0/1/0/10
+$
+interface xgei-0/1/0/11
+$
+interface xgei-0/1/0/12
+$
+interface xgei-0/1/0/13
+  description To-SW1-P13
+  ip address 192.168.10.2 255.255.255.252
+  no shutdown
+  switch attribute disable
+$
+interface xgei-0/1/0/14
+$
+interface xgei-0/1/0/15
+$
+interface xgei-0/1/0/16
+$
+interface xgei-0/1/0/17
+$
+interface xgei-0/1/0/18
+$
+interface xgei-0/1/0/19
+$
+interface xgei-0/1/0/20
+$
+interface xgei-0/1/0/21
+$
+interface xgei-0/1/0/22
+$
+interface xgei-0/1/0/23
+$
+interface xgei-0/1/0/24
+  description To-CP2
+  ip address 129.129.0.1 255.255.254.0
+  no shutdown
+  switch attribute disable
+$
+interface xgei-0/1/0/25
+$
+interface xgei-0/1/0/26
+$
+interface xgei-0/1/0/27
+$
+interface xgei-0/1/0/28
+$
+interface xgei-0/1/0/29
+$
+interface xgei-0/1/0/30
+$
+interface xgei-0/1/0/31
+$
+interface xgei-0/1/0/32
+$
+interface xgei-0/2/0/1
+$
+interface xgei-0/2/0/2
+$
+interface xgei-0/2/0/3
+$
+interface xgei-0/2/0/4
+  no shutdown
+$
+interface xgei-0/2/0/5
+$
+interface xgei-0/2/0/6
+  description www
+  ip address 10.10.10.1 255.255.255.252
+  switch attribute disable
+$
+interface xgei-0/2/0/7
+$
+interface xgei-0/2/0/8
+$
+interface xgei-0/2/0/9
+$
+interface xgei-0/2/0/10
+$
+interface xgei-0/2/0/11
+$
+interface xgei-0/2/0/12
+$
+interface xgei-0/2/0/13
+$
+interface xgei-0/2/0/14
+$
+interface xgei-0/2/0/15
+$
+interface xgei-0/2/0/16
+$
+interface xgei-0/2/0/17
+$
+interface xgei-0/2/0/18
+$
+interface xgei-0/2/0/19
+$
+interface xgei-0/2/0/20
+$
+interface xgei-0/2/0/21
+$
+interface xgei-0/2/0/22
+$
+interface xgei-0/2/0/23
+$
+interface xgei-0/2/0/24
+  description To-PC1
+$
+interface xgei-0/2/0/25
+$
+interface xgei-0/2/0/26
+$
+interface xgei-0/2/0/27
+$
+interface xgei-0/2/0/28
+$
+interface xgei-0/2/0/29
+$
+interface xgei-0/2/0/30
+$
+interface xgei-0/2/0/31
+$
+interface xgei-0/2/0/32
+$
+interface mgmt_eth
+  ip address 129.60.161.170 255.255.0.0
+$
+interface loopback1
+  ip address 1.1.1.170 255.255.255.255
+$
+interface loopback4
+  description www
+  ip address 1.1.1.173 255.255.255.255
+$
+interface null1
+$
+!</if-intf>
+!<ETHER_PORT>
+interface xgei-0/1/0/1
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/2
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/3
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/4
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/5
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/6
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/7
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/8
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/9
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/10
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/11
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/12
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/13
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/14
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/15
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/16
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/17
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/18
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/19
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/20
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/21
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/22
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/23
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/24
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/25
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/26
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/27
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/28
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/29
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/30
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/31
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/1/0/32
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/1
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/2
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/3
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/4
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/5
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/6
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/7
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/8
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/9
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/10
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/11
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/12
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/13
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/14
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/15
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/16
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/17
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/18
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/19
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/20
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/21
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/22
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/23
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/24
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/25
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/26
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/27
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/28
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/29
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/30
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/31
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+interface xgei-0/2/0/32
+  negotiation auto disable
+  broadcast-limit percent 10
+  multicast-limit percent 100
+  unknowncast-limit percent 10
+$
+!</ETHER_PORT>
+!<switchvlan>
+switchvlan-configuration
+  interface xgei-0/1/0/1
+    switchport qinq tpid external 0x8100
+  $
+  interface xgei-0/1/0/5
+    switchport qinq tpid external 0x8100
+  $
+  interface xgei-0/1/0/6
+    switchport qinq tpid external 0x8100
+  $
+  interface xgei-0/1/0/7
+    switchport qinq tpid external 0x8100
+  $
+  vlan 1
+  $
+  vlan 100
+  $
+$
+!</switchvlan>
+!<system-user>
+enable secret level 2 5 vL4zZeasleosA0OiOVg03Q==
+system-user
+  authorization-template 1
+    bind aaa-authorization-template 2001
+    local-privilege-level 15
+  $
+  authentication-template 1
+    bind aaa-authentication-template 2001
+  $
+  user-name who
+    bind authentication-template 1
+    bind authorization-template 1
+    password encrypted 2ce4c1ea3b41577bfe0391d34f4f0448ed70a30dd7de5a2395a626ea4d127acb
+  $
+  user-name zte
+    bind authentication-template 1
+    bind authorization-template 1
+    password encrypted ce7c04930c52bfe1669f6c229ef61b761ec847e5b3052bdb51456385bb2a9a57
+  $
+$
+!</system-user>
+!<aaa>
+aaa-authentication-template 2001
+  aaa-authentication-type local
+$
+aaa-authorization-template 2001
+  aaa-authorization-type local
+$
+!</aaa>
+!<evst>
+evst
+$
+!</evst>
+!<ssh>
+ssh server enable
+!</ssh>
+!<alarm>
+logging file default almlog
+  accept on
+$
+logging file default cmdlog
+  buffer 1000
+$
+logging file default srvlog
+  accept on
+  interval 10
+$
+logging file default netclog
+  accept on
+$
+logging snmp
+  accept on
+  match cmdlog
+$
+!</alarm>
+!<ospfv2>
+router ospf 1
+  area 0.0.0.0
+    interface loopback1
+    $
+    interface xgei-0/1/0/13
+    $
+  $
+  redistribute connected
+  router-id 1.1.1.172
+$
+router ospf 4
+  area 0.0.0.0
+  $
+  interface loopback4
+  $
+  interface xgei-0/1/0/13
+    network point-to-point
+  $
+  redistribute connected
+  router-id 1.1.1.173
+$
+!</ospfv2>
+!<static>
+ip route vrf mng 0.0.0.0 0.0.0.0 129.60.0.1
+!</static>
+SW2-170#
+
+
+PS：
+      authentication
+      authentication-key encrypted *21*Cd9FBNz0tjJfcP3w+fXbIPn12yD59dsg+fXbIFwQ2m8CuRaKeFZY9XXj8FU=
+      cost 5
+      dead-interval 4
+      hello-interval 1
+      network point-to-point
